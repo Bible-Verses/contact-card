@@ -106,31 +106,73 @@
     }
 
     @media screen and (max-width: 480px) {
-  body {
-    padding: 10px;
-    overflow: hidden;  /* Prevent scrolling on mobile */
-  }
+      body {
+        padding: 20px;
+        overflow: hidden; /* Prevent scrolling on mobile */
+        font-size: 14px;  /* Adjust font size for readability */
+      }
+    
+      .container {
+        padding: 20px;
+        margin-top: 20px;
+        max-width: 100%; /* Ensure the container takes full width */
+        border-radius: 15px; /* Soften the corners a bit */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+      }
+    
+      select, input[type="text"] {
+        font-size: 16px;
+        padding: 12px; /* Reduce padding for a more compact feel */
+        margin-bottom: 12px; /* Space out the inputs */
+        border-radius: 8px;  /* Softer border radius */
+      }
+    
+      button {
+        font-size: 16px;
+        padding: 14px;
+        background: var(--accent-color);
+        border-radius: 10px;
+        margin-top: 15px;  /* Add space above the button */
+      }
+    
+      #new-btn, #copy-btn {
+        font-size: 14px;
+        padding: 10px 15px;
+        width: auto;
+        position: fixed;
+        bottom: 10px;  /* Raise buttons slightly for better visibility */
+        z-index: 100;
+      }
+    
+      #new-btn {
+        right: 10px; /* More space from the right edge */
+      }
+    
+      #copy-btn {
+        left: 10px; /* More space from the left edge */
+      }
+    
+      #version {
+        position: fixed;
+        bottom: 5px;  /* Bring version text closer to the bottom */
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        color: #aaa;  /* Lighter color for version */
+      }
+    
+      .form-group {
+        margin-bottom: 20px; /* More space between form elements */
+      }
+    
+      h2 {
+        font-size: 20px;
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 20px;
+      }
+    }
 
-  .container {
-    padding: 20px;
-    margin-top: 20px;
-  }
-
-  select, input[type="text"] {
-    font-size: 16px;
-    padding: 16px;
-  }
-
-  button {
-    font-size: 18px;
-    padding: 15px;
-  }
-
-  #new-btn, #copy-btn {
-    font-size: 14px;
-    padding: 10px 18px;
-  }
-}
 
   </style>
 </head>
@@ -190,7 +232,7 @@
 
   <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
   <button id="copy-btn" onclick="copyURL()" style="display:none;">Copy URL</button>
-  <div id="version">v1.4.1</div>
+  <div id="version">v1.4.2</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
   <script>
