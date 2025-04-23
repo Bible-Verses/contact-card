@@ -92,7 +92,7 @@
       </select>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" id="name-group">
       <label for="name">Name:</label>
       <input type="text" id="name" />
     </div>
@@ -120,19 +120,41 @@
   </div>
 
   <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
-  <div id="version">v1.0.2</div>
+  <div id="version">v1.0.3</div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const idFromURL = urlParams.get('id');
-    const formContainer = document.getElementById('form-container');
-    const displayContainer = document.getElementById('display-container');
-    const newBtn = document.getElementById('new-btn');
+    const charMap = {};
+    const revCharMap = {};
+    let code = 1;
+
+    const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -@.:';
+    for (let c of allowedChars) {
+      const codeStr = code.toString().padStart(3, '0');
+      charMap[c] = codeStr;
+      revCharMap[codeStr] = c;
+      code++;
+    }
+
+    const DELIM = '999'; // field delimiter
+
+    function encode(str) {
+      return str.split('').map(c => charMap[c] || '000').join('');
+    }
+
+    function decode(str) {
+      let result = '';
+      for (let i = 0; i < str.length; i += 3) {
+        const code = str.slice(i, i + 3);
+        result += revCharMap[code] || '';
+      }
+      return result;
+    }
 
     function toggleGenderField() {
       const type = document.getElementById('type').value;
-      document.getElementById('gender-group').style.display = (type === 'pet' || type === 'other') ? 'block' : 'none';
-      document.getElementById('name').parentElement.style.display = (type === 'pet' || type === 'other') ? 'block' : 'none';
+      const show = (type === 'pet' || type === 'other');
+      document.getElementById('gender-group').style.display = show ? 'block' : 'none';
+      document.getElementById('name-group').style.display = show ? 'block' : 'none';
     }
 
     function submitForm() {
@@ -141,52 +163,264 @@
       const contact = document.getElementById('contact').value;
       const gender = document.getElementById('gender').value;
 
-      const id = Math.floor(100000 + Math.random() * 900000).toString();
-      const data = { type, name, contact, gender };
+      const fullStr = [type, name, gender, contact].join(DELIM);
+      const encoded = encode(fullStr);
 
-      localStorage.setItem(`contact-${id}`, JSON.stringify(data));
-      window.location.href = `${window.location.origin}${window.location.pathname}?id=${id}`;
+      window.location.href = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
     }
 
-    function displayData(id) {
-      const data = localStorage.getItem(`contact-${id}`);
-      if (!data) return;
+    function displayData(encoded) {
+      const decoded = decode(encoded);
+      const [type, name, gender, contact] = decoded.split(DELIM);
 
-      const parsed = JSON.parse(data);
       const titleLine = document.getElementById('title-line');
       const nameLine = document.getElementById('name-line');
       const dispContact = document.getElementById('disp-contact');
 
-      if (parsed.type === 'other') {
-  titleLine.textContent = 'You found me!';
-  nameLine.style.display = 'block';
-  const pronoun = parsed.gender === 'his' ? 'His' : 'Her';
-  nameLine.textContent = `${pronoun} name is: ${parsed.name}`;
-} else if (parsed.type === 'pet') {
-  titleLine.textContent = 'You found my pet!';
-  nameLine.style.display = 'block';
-  const pronoun = parsed.gender === 'his' ? 'His' : 'Her';
-  nameLine.textContent = `${pronoun} name is: ${parsed.name}`;
-}
+      if (type === 'other') {
+        titleLine.textContent = 'You found me!';
+        nameLine.style.display = 'block';
+        const pronoun = gender === 'his' ? 'His' : 'Her';
+        nameLine.textContent = `${pronoun} name is: ${name}`;
+      } else if (type === 'pet') {
+        titleLine.textContent = 'You found my pet!';
+        nameLine.style.display = 'block';
+        const pronoun = gender === 'his' ? 'His' : 'Her';
+        nameLine.textContent = `${pronoun} name is: ${name}`;
+      } else {
+        titleLine.textContent = `You found my ${type}!`;
+        nameLine.style.display = 'none';
+      }
 
-
-      dispContact.textContent = parsed.contact;
-
-      formContainer.style.display = 'none';
-      displayContainer.style.display = 'block';
-      newBtn.style.display = 'block';
+      dispContact.textContent = contact;
+      document.getElementById('form-container').style.display = 'none';
+      document.getElementById('display-container').style.display = 'block';
+      document.getElementById('new-btn').style.display = 'block';
     }
 
     function startNew() {
       window.location.href = `${window.location.origin}${window.location.pathname}`;
     }
 
-    if (idFromURL && /^[0-9]{6}$/.test(idFromURL)) {
-      displayData(idFromURL);
+    const dataParam = new URLSearchParams(window.location.search).get('data');
+    if (dataParam) {
+      displayData(dataParam);
     } else {
       toggleGenderField();
     }
   </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Card</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e6f2ff;
+      color: #003366;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #new-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #28a745;
+    }
+
+    #version {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: #666;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="form-container">
+    <div class="form-group">
+      <label for="type">Type:</label>
+      <select id="type" onchange="toggleGenderField()">
+        <option value="pet">Pet</option>
+        <option value="key">Key</option>
+        <option value="phone">Phone</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="name-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" />
+    </div>
+
+    <div class="form-group" id="gender-group">
+      <label for="gender">Gender:</label>
+      <select id="gender">
+        <option value="his">Male</option>
+        <option value="her">Female</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="contact">Contact Info:</label>
+      <input type="text" id="contact" />
+    </div>
+
+    <button onclick="submitForm()">Submit</button>
+  </div>
+
+  <div class="container" id="display-container" style="display: none;">
+    <h2 id="title-line"></h2>
+    <p id="name-line" style="display:none;"></p>
+    <p><strong>Please contact:</strong> <span id="disp-contact"></span></p>
+  </div>
+
+  <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
+  <div id="version">v1.0.0</div>
+
+  <script>
+    const charMap = {};
+    const revCharMap = {};
+    let code = 1;
+
+    const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -@.:';
+    for (let c of allowedChars) {
+      const codeStr = code.toString().padStart(3, '0');
+      charMap[c] = codeStr;
+      revCharMap[codeStr] = c;
+      code++;
+    }
+
+    const DELIM = '999'; // field delimiter
+
+    function encode(str) {
+      return str.split('').map(c => charMap[c] || '000').join('');
+    }
+
+    function decode(str) {
+      let result = '';
+      for (let i = 0; i < str.length; i += 3) {
+        const code = str.slice(i, i + 3);
+        result += revCharMap[code] || '';
+      }
+      return result;
+    }
+
+    function toggleGenderField() {
+      const type = document.getElementById('type').value;
+      const show = (type === 'pet' || type === 'other');
+      document.getElementById('gender-group').style.display = show ? 'block' : 'none';
+      document.getElementById('name-group').style.display = show ? 'block' : 'none';
+    }
+
+    function submitForm() {
+      const type = document.getElementById('type').value;
+      const name = document.getElementById('name').value;
+      const contact = document.getElementById('contact').value;
+      const gender = document.getElementById('gender').value;
+
+      const fullStr = [type, name, gender, contact].join(DELIM);
+      const encoded = encode(fullStr);
+
+      window.location.href = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+    }
+
+    function displayData(encoded) {
+      const decoded = decode(encoded);
+      const [type, name, gender, contact] = decoded.split(DELIM);
+
+      const titleLine = document.getElementById('title-line');
+      const nameLine = document.getElementById('name-line');
+      const dispContact = document.getElementById('disp-contact');
+
+      if (type === 'other') {
+        titleLine.textContent = 'You found me!';
+        nameLine.style.display = 'block';
+        const pronoun = gender === 'his' ? 'His' : 'Her';
+        nameLine.textContent = `${pronoun} name is: ${name}`;
+      } else if (type === 'pet') {
+        titleLine.textContent = 'You found my pet!';
+        nameLine.style.display = 'block';
+        const pronoun = gender === 'his' ? 'His' : 'Her';
+        nameLine.textContent = `${pronoun} name is: ${name}`;
+      } else {
+        titleLine.textContent = `You found my ${type}!`;
+        nameLine.style.display = 'none';
+      }
+
+      dispContact.textContent = contact;
+      document.getElementById('form-container').style.display = 'none';
+      document.getElementById('display-container').style.display = 'block';
+      document.getElementById('new-btn').style.display = 'block';
+    }
+
+    function startNew() {
+      window.location.href = `${window.location.origin}${window.location.pathname}`;
+    }
+
+    const dataParam = new URLSearchParams(window.location.search).get('data');
+    if (dataParam) {
+      displayData(dataParam);
+    } else {
+      toggleGenderField();
+    }
+  </script>
 </body>
 </html>
