@@ -158,17 +158,17 @@
       const dispContact = document.getElementById('disp-contact');
 
       if (parsed.type === 'other') {
-        titleLine.textContent = 'You found me!';
-        nameLine.style.display = 'block';
-        nameLine.textContent = `My name is: ${parsed.name}`;
-      } else if (parsed.type === 'pet') {
-        titleLine.textContent = `You found my pet!`;
-        nameLine.style.display = 'block';
-        nameLine.textContent = `Their name is: ${parsed.gender} ${parsed.name}`;
-      } else {
-        titleLine.textContent = `You found my ${parsed.type}!`;
-        nameLine.style.display = 'none';
-      }
+  titleLine.textContent = 'You found me!';
+  nameLine.style.display = 'block';
+  const pronoun = parsed.gender === 'his' ? 'His' : 'Her';
+  nameLine.textContent = `${pronoun} name is: ${parsed.name}`;
+} else if (parsed.type === 'pet') {
+  titleLine.textContent = 'You found my pet!';
+  nameLine.style.display = 'block';
+  const pronoun = parsed.gender === 'his' ? 'His' : 'Her';
+  nameLine.textContent = `${pronoun} name is: ${parsed.name}`;
+}
+
 
       dispContact.textContent = parsed.contact;
 
