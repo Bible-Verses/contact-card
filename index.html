@@ -5,28 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contact Card</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .form-group { margin-bottom: 15px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e6f2ff;
+      color: #003366;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
     #new-btn {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      padding: 10px 15px;
-      background: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      display: none;
+      background: #28a745;
+    }
+
+    #version {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: #666;
+    }
+
+    h2 {
+      margin-top: 0;
     }
   </style>
 </head>
 <body>
 
-  <div id="form-container">
+  <div class="container" id="form-container">
     <div class="form-group">
       <label for="type">Type:</label>
-      <select id="type">
+      <select id="type" onchange="toggleGenderField()">
         <option value="pet">Pet</option>
         <option value="key">Key</option>
         <option value="phone">Phone</option>
@@ -39,23 +97,30 @@
       <input type="text" id="name" />
     </div>
 
+    <div class="form-group" id="gender-group">
+      <label for="gender">Gender:</label>
+      <select id="gender">
+        <option value="his">Male</option>
+        <option value="her">Female</option>
+      </select>
+    </div>
+
     <div class="form-group">
       <label for="contact">Contact Info:</label>
       <input type="text" id="contact" />
     </div>
 
     <button onclick="submitForm()">Submit</button>
-    v1
   </div>
 
-  <div id="display-container" style="display: none;">
-    <h2>Item Info</h2>
-    <p><strong>Type:</strong> <span id="disp-type"></span></p>
-    <p><strong>Name:</strong> <span id="disp-name"></span></p>
-    <p><strong>Contact:</strong> <span id="disp-contact"></span></p>
+  <div class="container" id="display-container" style="display: none;">
+    <h2 id="title-line"></h2>
+    <p id="name-line" style="display:none;"></p>
+    <p><strong>Please contact:</strong> <span id="disp-contact"></span></p>
   </div>
 
-  <button id="new-btn" onclick="startNew()">New</button>
+  <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
+  <div id="version">v1.0.0</div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -64,16 +129,22 @@
     const displayContainer = document.getElementById('display-container');
     const newBtn = document.getElementById('new-btn');
 
+    function toggleGenderField() {
+      const type = document.getElementById('type').value;
+      document.getElementById('gender-group').style.display = (type === 'pet' || type === 'other') ? 'block' : 'none';
+      document.getElementById('name').parentElement.style.display = (type === 'pet' || type === 'other') ? 'block' : 'none';
+    }
+
     function submitForm() {
       const type = document.getElementById('type').value;
       const name = document.getElementById('name').value;
       const contact = document.getElementById('contact').value;
+      const gender = document.getElementById('gender').value;
 
-      const id = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit ID
-      const data = { type, name, contact };
+      const id = Math.floor(100000 + Math.random() * 900000).toString();
+      const data = { type, name, contact, gender };
 
       localStorage.setItem(`contact-${id}`, JSON.stringify(data));
-
       window.location.href = `${window.location.origin}${window.location.pathname}?id=${id}`;
     }
 
@@ -82,9 +153,24 @@
       if (!data) return;
 
       const parsed = JSON.parse(data);
-      document.getElementById('disp-type').textContent = parsed.type;
-      document.getElementById('disp-name').textContent = parsed.name;
-      document.getElementById('disp-contact').textContent = parsed.contact;
+      const titleLine = document.getElementById('title-line');
+      const nameLine = document.getElementById('name-line');
+      const dispContact = document.getElementById('disp-contact');
+
+      if (parsed.type === 'other') {
+        titleLine.textContent = 'You found me!';
+        nameLine.style.display = 'block';
+        nameLine.textContent = `My name is: ${parsed.name}`;
+      } else if (parsed.type === 'pet') {
+        titleLine.textContent = `You found my pet!`;
+        nameLine.style.display = 'block';
+        nameLine.textContent = `Their name is: ${parsed.gender} ${parsed.name}`;
+      } else {
+        titleLine.textContent = `You found my ${parsed.type}!`;
+        nameLine.style.display = 'none';
+      }
+
+      dispContact.textContent = parsed.contact;
 
       formContainer.style.display = 'none';
       displayContainer.style.display = 'block';
@@ -97,6 +183,8 @@
 
     if (idFromURL && /^[0-9]{6}$/.test(idFromURL)) {
       displayData(idFromURL);
+    } else {
+      toggleGenderField();
     }
   </script>
 
