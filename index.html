@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Card</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .form-group { margin-bottom: 15px; }
+    #new-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="form-container">
+    <div class="form-group">
+      <label for="type">Type:</label>
+      <select id="type">
+        <option value="pet">Pet</option>
+        <option value="key">Key</option>
+        <option value="phone">Phone</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" />
+    </div>
+
+    <div class="form-group">
+      <label for="contact">Contact Info:</label>
+      <input type="text" id="contact" />
+    </div>
+
+    <button onclick="submitForm()">Submit</button>
+  </div>
+
+  <div id="display-container" style="display: none;">
+    <h2>Item Info</h2>
+    <p><strong>Type:</strong> <span id="disp-type"></span></p>
+    <p><strong>Name:</strong> <span id="disp-name"></span></p>
+    <p><strong>Contact:</strong> <span id="disp-contact"></span></p>
+  </div>
+
+  <button id="new-btn" onclick="startNew()">New</button>
+
+  <script>
+    const idFromURL = window.location.pathname.split('/').pop();
+    const formContainer = document.getElementById('form-container');
+    const displayContainer = document.getElementById('display-container');
+    const newBtn = document.getElementById('new-btn');
+
+    function submitForm() {
+      const type = document.getElementById('type').value;
+      const name = document.getElementById('name').value;
+      const contact = document.getElementById('contact').value;
+
+      const id = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit ID
+      const data = { type, name, contact };
+
+      localStorage.setItem(`contact-${id}`, JSON.stringify(data));
+
+      window.location.href = `${window.location.origin}${window.location.pathname}${id}`;
+    }
+
+    function displayData(id) {
+      const data = localStorage.getItem(`contact-${id}`);
+      if (!data) return;
+
+      const parsed = JSON.parse(data);
+      document.getElementById('disp-type').textContent = parsed.type;
+      document.getElementById('disp-name').textContent = parsed.name;
+      document.getElementById('disp-contact').textContent = parsed.contact;
+
+      formContainer.style.display = 'none';
+      displayContainer.style.display = 'block';
+      newBtn.style.display = 'block';
+    }
+
+    function startNew() {
+      window.location.href = `${window.location.origin}${window.location.pathname}`;
+    }
+
+    if (idFromURL && /^[0-9]{6}$/.test(idFromURL)) {
+      displayData(idFromURL);
+    }
+  </script>
+
+</body>
+</html>
