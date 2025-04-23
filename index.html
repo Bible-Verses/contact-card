@@ -12,16 +12,17 @@
       --text-color: #003366;
     }
 
-    body {
+    body, html {
       font-family: 'Inter', sans-serif;
       background: var(--bg-color);
       color: var(--text-color);
       margin: 0;
-      padding: 20px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: background 0.3s ease, color 0.3s ease;
+      overflow: hidden; /* Prevent scrolling */
+      height: 100%; /* Ensure full height is utilized */
     }
 
     .container {
@@ -188,7 +189,7 @@
 
   <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
   <button id="copy-btn" onclick="copyURL()" style="display:none;">Copy URL</button>
-  <div id="version">v1.4.0</div>
+  <div id="version">v1.4.5</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
   <script>
