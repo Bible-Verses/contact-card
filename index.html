@@ -21,12 +21,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: background 0.3s ease;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     .container {
       background: white;
-      padding: 30px;
+      padding: 24px;
       border-radius: 20px;
       max-width: 420px;
       width: 100%;
@@ -47,14 +47,16 @@
 
     select, input[type="text"] {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 16px;
+      box-sizing: border-box;
     }
 
     button {
-      padding: 12px 20px;
+      width: 100%;
+      padding: 12px;
       font-size: 16px;
       background: var(--accent-color);
       color: white;
@@ -72,7 +74,10 @@
       position: fixed;
       bottom: 20px;
       background: #28a745;
+      width: auto;
+      padding: 10px 20px;
       z-index: 100;
+      border-radius: 10px;
     }
 
     #new-btn {
@@ -98,6 +103,31 @@
 
     .theme-select {
       margin-top: 10px;
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      select, input[type="text"] {
+        font-size: 15px;
+      }
+
+      button {
+        font-size: 15px;
+        padding: 10px;
+      }
+
+      #new-btn, #copy-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
     }
   </style>
 </head>
@@ -139,6 +169,10 @@
         <option value="lavender">Lavender</option>
         <option value="mint">Mint</option>
         <option value="peach">Peach</option>
+        <option value="sunset">Sunset</option>
+        <option value="ocean">Ocean</option>
+        <option value="rose">Rose</option>
+        <option value="gray">Gray Mode</option>
       </select>
     </div>
 
@@ -153,32 +187,35 @@
 
   <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
   <button id="copy-btn" onclick="copyURL()" style="display:none;">Copy URL</button>
-  <div id="version">v1.3.0</div>
+  <div id="version">v1.4.0</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
-
   <script>
-    function toggleGenderField() {
-      const type = document.getElementById('type').value;
-      const show = (type === 'pet' || type === 'other');
-      document.getElementById('gender-group').style.display = show ? 'block' : 'none';
-      document.getElementById('name-group').style.display = show ? 'block' : 'none';
-    }
+    const themes = {
+      blue: ['#e6f2ff', '#007BFF', '#003366'],
+      lavender: ['#f5e9ff', '#b56eff', '#4c0070'],
+      mint: ['#e0fff2', '#00c897', '#005f4b'],
+      peach: ['#fff0e5', '#ff884d', '#552100'],
+      sunset: ['#ffe6e0', '#ff5c57', '#752b23'],
+      ocean: ['#e0f7fa', '#0097a7', '#004d40'],
+      rose: ['#ffe5ec', '#ff4d6d', '#730026'],
+      gray: ['#f2f2f2', '#777', '#111']
+    };
 
     function applyTheme(theme) {
-      const themes = {
-        blue: ['#e6f2ff', '#007BFF', '#003366'],
-        lavender: ['#f5e9ff', '#b56eff', '#4c0070'],
-        mint: ['#e0fff2', '#00c897', '#005f4b'],
-        peach: ['#fff0e5', '#ff884d', '#552100']
-      };
-
       if (themes[theme]) {
         const [bg, accent, text] = themes[theme];
         document.documentElement.style.setProperty('--bg-color', bg);
         document.documentElement.style.setProperty('--accent-color', accent);
         document.documentElement.style.setProperty('--text-color', text);
       }
+    }
+
+    function toggleGenderField() {
+      const type = document.getElementById('type').value;
+      const show = (type === 'pet' || type === 'other');
+      document.getElementById('gender-group').style.display = show ? 'block' : 'none';
+      document.getElementById('name-group').style.display = show ? 'block' : 'none';
     }
 
     function submitForm() {
