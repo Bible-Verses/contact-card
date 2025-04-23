@@ -58,11 +58,18 @@
       background: #0056b3;
     }
 
-    #new-btn {
+    #new-btn, #copy-btn {
       position: fixed;
       bottom: 20px;
-      right: 20px;
       background: #28a745;
+    }
+
+    #new-btn {
+      right: 20px;
+    }
+
+    #copy-btn {
+      left: 20px;
     }
 
     #version {
@@ -120,36 +127,13 @@
   </div>
 
   <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
-  <div id="version">v1.0.0</div>
+  <button id="copy-btn" onclick="copyURL()" style="display:none;">Copy URL</button>
+  <div id="version">v1.2.0</div>
+
+  <!-- Include LZ-string from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 
   <script>
-    const charMap = {};
-    const revCharMap = {};
-    let code = 1;
-
-    const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -@.:';
-    for (let c of allowedChars) {
-      const codeStr = code.toString().padStart(3, '0');
-      charMap[c] = codeStr;
-      revCharMap[codeStr] = c;
-      code++;
-    }
-
-    const DELIM = '999'; // field delimiter
-
-    function encode(str) {
-      return str.split('').map(c => charMap[c] || '000').join('');
-    }
-
-    function decode(str) {
-      let result = '';
-      for (let i = 0; i < str.length; i += 3) {
-        const code = str.slice(i, i + 3);
-        result += revCharMap[code] || '';
-      }
-      return result;
-    }
-
     function toggleGenderField() {
       const type = document.getElementById('type').value;
       const show = (type === 'pet' || type === 'other');
@@ -163,15 +147,15 @@
       const contact = document.getElementById('contact').value;
       const gender = document.getElementById('gender').value;
 
-      const fullStr = [type, name, gender, contact].join(DELIM);
-      const encoded = encode(fullStr);
+      const parts = [type, name, gender, contact];
+      const compressed = LZString.compressToEncodedURIComponent(parts.join('~'));
 
-      window.location.href = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+      window.location.href = `${window.location.origin}${window.location.pathname}?data=${compressed}`;
     }
 
     function displayData(encoded) {
-      const decoded = decode(encoded);
-      const [type, name, gender, contact] = decoded.split(DELIM);
+      const decompressed = LZString.decompressFromEncodedURIComponent(encoded);
+      const [type, name, gender, contact] = decompressed.split('~');
 
       const titleLine = document.getElementById('title-line');
       const nameLine = document.getElementById('name-line');
@@ -196,10 +180,19 @@
       document.getElementById('form-container').style.display = 'none';
       document.getElementById('display-container').style.display = 'block';
       document.getElementById('new-btn').style.display = 'block';
+      document.getElementById('copy-btn').style.display = 'block';
     }
 
     function startNew() {
       window.location.href = `${window.location.origin}${window.location.pathname}`;
+    }
+
+    function copyURL() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert("Link copied!");
+      }).catch(() => {
+        alert("Failed to copy link.");
+      });
     }
 
     const dataParam = new URLSearchParams(window.location.search).get('data');
