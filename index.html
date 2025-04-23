@@ -4,64 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contact Card</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-color: #e6f2ff;
+      --accent-color: #007BFF;
+      --text-color: #003366;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #e6f2ff;
-      color: #003366;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
       padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: background 0.3s ease;
     }
 
     .container {
       background: white;
       padding: 30px;
-      border-radius: 15px;
-      max-width: 400px;
+      border-radius: 20px;
+      max-width: 420px;
       width: 100%;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
       margin-top: 40px;
+      transition: all 0.3s ease;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
+      font-weight: 600;
+      margin-bottom: 6px;
     }
 
     select, input[type="text"] {
       width: 100%;
-      padding: 10px;
+      padding: 10px 12px;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 10px;
+      font-size: 15px;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 12px 20px;
       font-size: 16px;
-      background: #007BFF;
+      background: var(--accent-color);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
+      transition: background 0.2s ease;
     }
 
     button:hover {
-      background: #0056b3;
+      filter: brightness(0.95);
     }
 
     #new-btn, #copy-btn {
       position: fixed;
       bottom: 20px;
       background: #28a745;
+      z-index: 100;
     }
 
     #new-btn {
@@ -83,6 +94,10 @@
 
     h2 {
       margin-top: 0;
+    }
+
+    .theme-select {
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -117,6 +132,16 @@
       <input type="text" id="contact" />
     </div>
 
+    <div class="form-group theme-select">
+      <label for="theme">Color Theme:</label>
+      <select id="theme" onchange="applyTheme(this.value)">
+        <option value="blue">Light Blue</option>
+        <option value="lavender">Lavender</option>
+        <option value="mint">Mint</option>
+        <option value="peach">Peach</option>
+      </select>
+    </div>
+
     <button onclick="submitForm()">Submit</button>
   </div>
 
@@ -128,9 +153,8 @@
 
   <button id="new-btn" onclick="startNew()" style="display:none;">New</button>
   <button id="copy-btn" onclick="copyURL()" style="display:none;">Copy URL</button>
-  <div id="version">v1.2.0</div>
+  <div id="version">v1.3.0</div>
 
-  <!-- Include LZ-string from CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 
   <script>
@@ -141,13 +165,30 @@
       document.getElementById('name-group').style.display = show ? 'block' : 'none';
     }
 
+    function applyTheme(theme) {
+      const themes = {
+        blue: ['#e6f2ff', '#007BFF', '#003366'],
+        lavender: ['#f5e9ff', '#b56eff', '#4c0070'],
+        mint: ['#e0fff2', '#00c897', '#005f4b'],
+        peach: ['#fff0e5', '#ff884d', '#552100']
+      };
+
+      if (themes[theme]) {
+        const [bg, accent, text] = themes[theme];
+        document.documentElement.style.setProperty('--bg-color', bg);
+        document.documentElement.style.setProperty('--accent-color', accent);
+        document.documentElement.style.setProperty('--text-color', text);
+      }
+    }
+
     function submitForm() {
       const type = document.getElementById('type').value;
       const name = document.getElementById('name').value;
       const contact = document.getElementById('contact').value;
       const gender = document.getElementById('gender').value;
+      const theme = document.getElementById('theme').value;
 
-      const parts = [type, name, gender, contact];
+      const parts = [type, name, gender, contact, theme];
       const compressed = LZString.compressToEncodedURIComponent(parts.join('~'));
 
       window.location.href = `${window.location.origin}${window.location.pathname}?data=${compressed}`;
@@ -155,7 +196,9 @@
 
     function displayData(encoded) {
       const decompressed = LZString.decompressFromEncodedURIComponent(encoded);
-      const [type, name, gender, contact] = decompressed.split('~');
+      const [type, name, gender, contact, theme] = decompressed.split('~');
+
+      applyTheme(theme || 'blue');
 
       const titleLine = document.getElementById('title-line');
       const nameLine = document.getElementById('name-line');
