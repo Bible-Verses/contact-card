@@ -11,7 +11,7 @@
       --accent-color: #007BFF;
       --text-color: #003366;
     }
-
+    
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg-color);
@@ -19,32 +19,34 @@
       margin: 0;
       padding: 20px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: background 0.3s ease, color 0.3s ease;
+      justify-content: center;  /* Horizontally center content */
+      align-items: center;      /* Vertically center content */
+      height: 100vh;            /* Full viewport height */
+      overflow: hidden;         /* Prevent scrolling */
+      flex-direction: column;   /* Stack content vertically */
     }
-
+    
     .container {
-      background: white;
       padding: 24px;
       border-radius: 20px;
-      max-width: 420px;
-      width: 100%;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-      margin-top: 40px;
-      transition: all 0.3s ease;
+      background: white;
+      width: 100%;
+      max-width: 420px;  /* Limit the width on larger screens */
+      text-align: center;  /* Center text inside container */
+      margin-top: 20px;  /* Margin from the top */
     }
-
+    
     .form-group {
       margin-bottom: 16px;
     }
-
+    
     label {
       display: block;
       font-weight: 600;
       margin-bottom: 6px;
     }
-
+    
     select, input[type="text"] {
       width: 100%;
       padding: 14px;
@@ -53,7 +55,7 @@
       font-size: 16px;
       box-sizing: border-box;
     }
-
+    
     button {
       width: 100%;
       padding: 14px;
@@ -65,11 +67,11 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-
+    
     button:hover {
       filter: brightness(0.95);
     }
-
+    
     #new-btn, #copy-btn {
       position: fixed;
       bottom: 20px;
@@ -79,15 +81,15 @@
       z-index: 100;
       border-radius: 10px;
     }
-
+    
     #new-btn {
       right: 20px;
     }
-
+    
     #copy-btn {
       left: 20px;
     }
-
+    
     #version {
       position: fixed;
       bottom: 10px;
@@ -96,15 +98,15 @@
       font-size: 12px;
       color: #666;
     }
-
+    
     h2 {
       margin-top: 0;
     }
-
+    
     .theme-select {
       margin-top: 10px;
     }
-
+    
     @media screen and (max-width: 480px) {
       body {
         padding: 0;
@@ -114,25 +116,20 @@
         align-items: center;      /* Vertically center content */
         height: 100vh;            /* Full viewport height */
         overflow: hidden;         /* Prevent scrolling */
-        font-size: 14px;
-        background: var(--bg-color);  /* Ensure background color is applied */
+        flex-direction: column;   /* Stack content vertically */
+        font-size: 14px;          /* Adjust font size for readability */
       }
     
       .container {
         padding: 20px;
-        margin-top: 20px;
-        max-width: 100%;
-        border-radius: 15px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        width: 90%;  /* Ensure it doesn't stretch too wide */
-        text-align: center;  /* Center the form contents */
+        max-width: 90%;  /* Ensure container doesn’t stretch too wide on mobile */
       }
     
       select, input[type="text"] {
         font-size: 16px;
         padding: 12px;
         margin-bottom: 12px;
-        width: 100%;  /* Ensure inputs take full width */
+        width: 100%;  /* Inputs take full width */
         border-radius: 8px;
       }
     
@@ -141,7 +138,7 @@
         padding: 14px;
         background: var(--accent-color);
         border-radius: 10px;
-        width: 100%;  /* Full width for button */
+        width: 100%;  /* Button takes full width */
         margin-top: 15px;
       }
     
@@ -184,6 +181,7 @@
         margin-bottom: 20px;
       }
     }
+
   </style>
 </head>
 <body>
