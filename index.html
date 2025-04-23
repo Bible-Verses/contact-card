@@ -107,24 +107,33 @@
 
     @media screen and (max-width: 480px) {
       body {
-        padding: 20px;
-        overflow: hidden; /* Prevent scrolling on mobile */
-        font-size: 14px;  /* Adjust font size for readability */
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;  /* Horizontally center content */
+        align-items: center;      /* Vertically center content */
+        height: 100vh;            /* Full viewport height */
+        overflow: hidden;         /* Prevent scrolling */
+        font-size: 14px;
+        background: var(--bg-color);  /* Ensure background color is applied */
       }
     
       .container {
         padding: 20px;
         margin-top: 20px;
-        max-width: 100%; /* Ensure the container takes full width */
-        border-radius: 15px; /* Soften the corners a bit */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 90%;  /* Ensure it doesn't stretch too wide */
+        text-align: center;  /* Center the form contents */
       }
     
       select, input[type="text"] {
         font-size: 16px;
-        padding: 12px; /* Reduce padding for a more compact feel */
-        margin-bottom: 12px; /* Space out the inputs */
-        border-radius: 8px;  /* Softer border radius */
+        padding: 12px;
+        margin-bottom: 12px;
+        width: 100%;  /* Ensure inputs take full width */
+        border-radius: 8px;
       }
     
       button {
@@ -132,7 +141,8 @@
         padding: 14px;
         background: var(--accent-color);
         border-radius: 10px;
-        margin-top: 15px;  /* Add space above the button */
+        width: 100%;  /* Full width for button */
+        margin-top: 15px;
       }
     
       #new-btn, #copy-btn {
@@ -140,29 +150,31 @@
         padding: 10px 15px;
         width: auto;
         position: fixed;
-        bottom: 10px;  /* Raise buttons slightly for better visibility */
+        bottom: 10px;
         z-index: 100;
+        background: var(--accent-color);
+        border-radius: 10px;
       }
     
       #new-btn {
-        right: 10px; /* More space from the right edge */
+        right: 20px;
       }
     
       #copy-btn {
-        left: 10px; /* More space from the left edge */
+        left: 20px;
       }
     
       #version {
         position: fixed;
-        bottom: 5px;  /* Bring version text closer to the bottom */
+        bottom: 5px;
         left: 50%;
         transform: translateX(-50%);
         font-size: 10px;
-        color: #aaa;  /* Lighter color for version */
+        color: #aaa;
       }
     
       .form-group {
-        margin-bottom: 20px; /* More space between form elements */
+        margin-bottom: 20px;
       }
     
       h2 {
@@ -172,8 +184,6 @@
         margin-bottom: 20px;
       }
     }
-
-
   </style>
 </head>
 <body>
